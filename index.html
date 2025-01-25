@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCB生成器</title>
+    <style>
+        :root {
+            --primary-color: #2A2A72;
+            --secondary-color: #009FFD;
+            --accent-color: #FF3CAC;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: '微软雅黑', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) rotateX(2deg) rotateY(2deg) translateY(-5px);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            resize: vertical;
+            min-height: 150px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 15px rgba(0, 159, 253, 0.3);
+        }
+
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 0 auto;
+            transform: translateZ(0);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 60, 172, 0.4);
+        }
+
+        .result-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.5s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .keyword {
+            font-size: 3em;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 1rem 0;
+            letter-spacing: 2px;
+        }
+
+        .explanation {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid var(--secondary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ccb生成器</h1>
+        <div class="input-group">
+            <textarea id="storyInput" placeholder="请输入你的故事..."></textarea>
+        </div>
+        <button onclick="generateKeyword()">生成CCB……哇袄！</button>
+        <div class="loader" id="loader"></div>
+        <div class="result-card" id="resultCard">
+            <div class="keyword" id="keyword"></div>
+            <div class="explanation" id="explanation"></div>
+        </div>
+    </div>
+
+    <script>
+        async function generateKeyword() {
+            const story = document.getElementById('storyInput').value;
+            const loader = document.getElementById('loader');
+            const resultCard = document.getElementById('resultCard');
+
+            if (!story) {
+                alert('请输入故事内容');
+                return;
+            }
+
+            try {
+                loader.style.display = 'block';
+                resultCard.style.display = 'none';
+
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `story=${encodeURIComponent(story)}`
+                });
+
+                const data = await response.json();
+
+                document.getElementById('keyword').textContent = data.keyword;
+                document.getElementById('explanation').textContent = data.explanation;
+                resultCard.style.display = 'block';
+            } catch (error) {
+                alert('生成失败，请稍后重试');
+                console.error(error);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // 添加输入框动画
+        document.getElementById('storyInput').addEventListener('focus', function() {
+            this.parentElement.style.transform = 'perspective(1000px) translateZ(20px)';
+        });
+
+        document.getElementById('storyInput').addEventListener('blur', function() {
+            this.parentElement.style.transform = 'none';
+        });
+    </script>
+</body>
+</html>
