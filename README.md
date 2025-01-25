@@ -1,6 +1,6 @@
 # -AI-CCB-  
 使用php+html用ai生成“CCB”词语，让你成为ccb领域大佬  
-可以在https://ccb.cgi2025.xyz预览效果(使用deepseek-chat模型)  
+可以在https://ccb.cgi2025.xyz 预览效果(使用deepseek-chat模型)  
 *需要在服务器安装php。推荐版本：php-7.3  
 *使用前，请将"api.php"文件按照以下规则进行更改（列举的行数在不进行第2条操作的情况下具有参考性）：  
   1.将第4行中的your-api-key更改为你的api密钥  
